@@ -4,3 +4,6 @@ obj
 
 # VSCode用
 .vscode
+
+# dataを秘匿
+data.yml
