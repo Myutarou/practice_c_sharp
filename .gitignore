@@ -1,2 +1,9 @@
+# 共通言語ランタイム保存場所
 bin
 obj
+
+# VSCode用
+.vscode
+
+# dataを秘匿
+data.yml
