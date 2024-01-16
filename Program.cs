@@ -1,4 +1,12 @@
 ﻿using YamlDotNet.RepresentationModel;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 
 /// <summary>
@@ -15,9 +23,38 @@ namespace Program
         /// ymlファイルのURI
         /// </summary>
         private static string yamlPath = "data.yml";
+
+        private DiscordSocketClient client;
+        public static CommandService commands;
+        public static IServiceProvider services;
+        
         public static void Main()
         {
-            Console.WriteLine(GetYamlData("api"));
+            new Program().MainAsync().GetAwaiter().GetResult();
+        }
+
+        public async Task MainAsync()
+        {
+            client = new DiscordSocketClient(new DiscordSocketConfig
+            {
+                LogLevel = LogSeverity.Info
+            });
+            client.Log += Log;
+            commands = new CommandService();
+            // services = new IServiceCollection().BuildServiceProvider();
+            // client.MessageReceived += CommandRecieved;
+            string token = GetYamlData("token");
+            await commands.AddModulesAsync(Assembly.GetEntryAssembly(), services);
+            await client.LoginAsync(TokenType.Bot, token);
+            await client.StartAsync();
+
+            await Task.Delay(-1);
+        }
+
+        private Task Log(LogMessage message)
+        {
+            Console.WriteLine(message.ToString());
+            return Task.CompletedTask;
         }
 
         /// <summary>
